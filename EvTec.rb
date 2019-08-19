@@ -9,6 +9,7 @@ PORT = 2020
 socket = TCPServer.new('localhost', PORT)
 
 puts "Ctrl + c to stop"
+
 loop {
   client  = server.accept
   request = client.readpartial(2048)
@@ -20,7 +21,18 @@ def parse(request)
   {
     path: path,
     method: method,
-    headers: version,
+    headers: parse_headers(request)
   }
 end
-
+def parse_headers(request)
+  headers = {}
+  request.lines[1..-1].each do |line|
+    return headers if line == "\r\n"
+    header, val= line.split
+    header = normalize(header)
+    headers[header] = val
+  end
+  def normalize(header)
+    header.gsub(":", "").downcase.to_sym
+  end
+end
