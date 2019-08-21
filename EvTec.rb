@@ -36,3 +36,42 @@ def parse_headers(request)
     header.gsub(":", "").downcase.to_sym
   end
 end
+
+SERVER_ROOT = "/tmp/web-server/"
+def prepare_response(request)
+  if request.fetch(:path) == "/"
+    respond(SERVER_ROOT + "index.html")
+  else
+    respond(SERVER_ROOT + request.fetch(:path))
+  end
+end
+def respond(path)
+  if File.exists?(path)
+    ok_response(File.binread(path))
+  else
+    file_not_found
+  end
+end
+
+def ok_response(data)
+  Response.new(code: 200, data: data)
+  # Codigo 200 = codigo OK
+end
+def file_not_found
+  Response.new(code: 404)
+end
+
+class Response
+  def initialize(code:,data: "")
+    @response=
+    "HTTP/1.1 #{code}\r\n" +
+    "Content-Length: #{data.size}\r\n" +
+    "\r\n" +
+    "#{data}\r\n"
+  end
+  def send(client)
+    client.write(@response)
+  end
+
+loop
+
