@@ -1,5 +1,3 @@
-# probando
-
 require 'socket'
 
 puts "Enter port: "
@@ -61,6 +59,20 @@ def file_not_found
   Response.new(code: 404)
 end
 
+# = EvTec.rb
+#
+# Author::  Joaquin Abeiro
+#
+# == Class Response
+#
+# The "response" class is made to format the response through a template
+#
+# === Composition
+#
+# Definition of the _Response_ class composed of :
+# * method initialize
+# * method send
+
 class Response
   def initialize(code:,data: "")
     @response=
@@ -72,6 +84,12 @@ class Response
   def send(client)
     client.write(@response)
   end
+end
 
 loop
+
+# test
+# documentacion rdoc
+# “Storage commands” y “Retrieval commands”
+# metodos set, add, replace, append , prepend y get, gets (memcached)
 
