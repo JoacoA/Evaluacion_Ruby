@@ -2,7 +2,8 @@
 # Author :: Joaquin Abeiro
 
 require 'socket'
-# require 'memcached' !!!!!!!!!!!!
+require "test/unit"
+# require 'memcached' file not found error !!!!!!!!!!!!
 
 # == Class Tester
 #
@@ -17,18 +18,18 @@ require 'socket'
 
 class Tester < Test::Unit::TestCase
 
-  def test_parse(request)
-    assert_equal(3, (parse(request).length))
-    assert_equal(3, (parse_headers(request).length))
-  end
+  # def test_parse(request)
+  #   assert_equal(3, (parse(request).length))
+  #   assert_equal(3, (parse_headers(request).length))
+  # end
 
-  def test_response
-    puts "it's not done yet :c"
-  end
+  # def test_response
+  #   assert_equal(4, Response.new(200," ").add(2) )
+  # end
 
-  def test_failure
-    assert_equal(4, (parse(request).length), "Something doesn't work" )
-  end
+  # def test_failure
+  #   assert_equal(4, (parse(request).length), "Something doesn't work" )
+  # end
 
 end
 
@@ -55,17 +56,11 @@ class Response
   end
 end
 
-puts "The server will accept connections on port 2020"
+puts "
+The server will accept connections on port 2020"
 PORT = 2020
 server = TCPServer.new('localhost', PORT)
-# cache = Memcached.new("localhost:2020") !!!!!!!!!!!!!!!!!!
 puts "Ctrl + c to stop"
-
-loop {
-  client  = server.accept
-  request = client.readpartial(2048)
-  puts request
-}
 
 # Functions  that are dedicated to parse the request
 def parse(request)
@@ -84,11 +79,13 @@ def parse_headers(request)
     header = normalize(header)
     headers[header] = val
   end
-  def normalize(header)
-    header.gsub(":", "").downcase.to_sym
-  end
 end
 
+def normalize(header)
+  header.gsub(":", "").downcase.to_sym
+end
+
+#Response functions
 SERVER_ROOT = "/tmp/web-server/"
 def prepare_response(request)
   if request.fetch(:path) == "/"
@@ -107,7 +104,7 @@ end
 
 def ok_response(data)
   Response.new(code: 200, data: data)
-  # Codigo 200 = codigo OK
+  # Code 200 = code OK
 end
 def file_not_found
   Response.new(code: 404)
@@ -118,14 +115,9 @@ end
 loop {
   client  = server.accept
   request = client.readpartial(2048)
-  request  = RequestParser.parse(request)
-  response = ResponsePreparer.prepare(request)
+  request  = parse(request)
+  response = prepare_response(request)
   puts "#{client.peeraddr[3]} #{request.fetch(:path)} - #{response.code}"
   response.send(client)
   client.close
 }
-
-# test
-# documentacion rdoc
-# “Storage commands” y “Retrieval commands”
-# metodos set, add, replace, append , prepend y get, gets (memcached)
