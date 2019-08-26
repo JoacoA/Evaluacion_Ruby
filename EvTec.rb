@@ -1,11 +1,64 @@
+# = EvTec.rb
+# Author :: Joaquin Abeiro
+
 require 'socket'
+# require 'memcached' !!!!!!!!!!!!
 
-puts "Enter port: "
-p = gets
-puts "Well I don't care what port you want, I'm going to put it in 2020 because I can"
+# == Class Tester
+#
+# This class test the server
+#
+# === Composition
+#
+# Definition of the _Tester_ class composed of :
+# * method test_parse
+# * method test_response
+# * method test_failure
+
+class Tester < Test::Unit::TestCase
+
+  def test_parse(request)
+    assert_equal(3, (parse(request).length))
+    assert_equal(3, (parse_headers(request).length))
+  end
+
+  def test_response
+    puts "it's not done yet :c"
+  end
+
+  def test_failure
+    assert_equal(4, (parse(request).length), "Something doesn't work" )
+  end
+
+end
+
+# == Class Response
+#
+# The "response" class is made to format the response through a template
+#
+# === Composition
+#
+# Definition of the _Response_ class composed of :
+# * method initialize
+# * method send
+
+class Response
+  def initialize(code:,data: "")
+    @response=
+    "HTTP/1.1 #{code}\r\n" +
+    "Content-Length: #{data.size}\r\n" +
+    "\r\n" +
+    "#{data}\r\n"
+  end
+  def send(client)
+    client.write(@response)
+  end
+end
+
+puts "The server will accept connections on port 2020"
 PORT = 2020
-socket = TCPServer.new('localhost', PORT)
-
+server = TCPServer.new('localhost', PORT)
+# cache = Memcached.new("localhost:2020") !!!!!!!!!!!!!!!!!!
 puts "Ctrl + c to stop"
 
 loop {
@@ -14,6 +67,7 @@ loop {
   puts request
 }
 
+# Functions  that are dedicated to parse the request
 def parse(request)
   method, path, version = request.lines[0].split
   {
@@ -57,39 +111,21 @@ def ok_response(data)
 end
 def file_not_found
   Response.new(code: 404)
+  # Clasic error 404
 end
 
-# = EvTec.rb
-#
-# Author::  Joaquin Abeiro
-#
-# == Class Response
-#
-# The "response" class is made to format the response through a template
-#
-# === Composition
-#
-# Definition of the _Response_ class composed of :
-# * method initialize
-# * method send
-
-class Response
-  def initialize(code:,data: "")
-    @response=
-    "HTTP/1.1 #{code}\r\n" +
-    "Content-Length: #{data.size}\r\n" +
-    "\r\n" +
-    "#{data}\r\n"
-  end
-  def send(client)
-    client.write(@response)
-  end
-end
-
-loop
+#Loop to accept conections
+loop {
+  client  = server.accept
+  request = client.readpartial(2048)
+  request  = RequestParser.parse(request)
+  response = ResponsePreparer.prepare(request)
+  puts "#{client.peeraddr[3]} #{request.fetch(:path)} - #{response.code}"
+  response.send(client)
+  client.close
+}
 
 # test
 # documentacion rdoc
 # “Storage commands” y “Retrieval commands”
 # metodos set, add, replace, append , prepend y get, gets (memcached)
-
