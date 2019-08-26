@@ -3,7 +3,6 @@
 
 require 'socket'
 require "test/unit"
-# require 'memcached' file not found error !!!!!!!!!!!!
 
 # == Class Tester
 #
@@ -13,23 +12,18 @@ require "test/unit"
 #
 # Definition of the _Tester_ class composed of :
 # * method test_parse
-# * method test_response
 # * method test_failure
 
 class Tester < Test::Unit::TestCase
 
-  # def test_parse(request)
-  #   assert_equal(3, (parse(request).length))
-  #   assert_equal(3, (parse_headers(request).length))
-  # end
+  def test_parse(request)
+    assert_equal(3, (parse(request).length))
+    assert_equal(3, (parse_headers(request).length))
+  end
 
-  # def test_response
-  #   assert_equal(4, Response.new(200," ").add(2) )
-  # end
-
-  # def test_failure
-  #   assert_equal(4, (parse(request).length), "Something doesn't work" )
-  # end
+  def test_failure
+    assert_equal(4, (parse(request).length), "Something doesn't work" )
+  end
 
 end
 
@@ -117,7 +111,11 @@ loop {
   request = client.readpartial(2048)
   request  = parse(request)
   response = prepare_response(request)
-  puts "#{client.peeraddr[3]} #{request.fetch(:path)} - #{response.code}"
+  puts "#{client.peeraddr[3]} #{request.fetch(:path)} "
   response.send(client)
   client.close
 }
+
+#  112  request  = RequestParser.new.parse(request)
+#  113  response = ResponsePreparer.new.prepare(request)
+#  114  - #{response.code}
