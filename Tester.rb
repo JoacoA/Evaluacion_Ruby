@@ -2,6 +2,8 @@ require "test/unit"
 
 # == Class Tester
 #
+# Author :: Joaquin Abeiro
+#
 # This class test the server
 #
 # === Composition

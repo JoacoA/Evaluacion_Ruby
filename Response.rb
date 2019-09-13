@@ -1,6 +1,8 @@
 
 # == Class Response
 #
+# Author :: Joaquin Abeiro
+#
 # The "response" class is made to format the response through a template
 #
 # === Composition
@@ -47,3 +49,4 @@ class Response implements IResponse
     # Clasic error 404
   end
 end
+

@@ -33,6 +33,7 @@ def normalize(header)
   header.gsub(":", "").downcase.to_sym
 end
 
+
 #Loop to accept conections
 loop {
   client  = server.accept
